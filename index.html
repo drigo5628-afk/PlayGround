@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#101a17" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='32' fill='%231a2c25'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='44' fill='%23f1d99a'%3E%E2%99%9E%3C/text%3E%3C/svg%3E" />
+  <title>Jaque Royale — La suerte favorece al rey</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <script src="game.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Jaque Royale inicio">
+        <span class="brand-mark">♞</span>
+        <span class="brand-copy"><strong>JAQUE <i>ROYALE</i></strong><small>EL CASINO DE LOS REYES</small></span>
+      </a>
+      <div class="run-stats" aria-label="Estado de la partida">
+        <div class="stat"><span class="stat-label">SALA</span><strong id="roomLabel">01 <small>/ 03</small></strong></div>
+        <div class="stat stat-chips"><span class="stat-label">FICHAS</span><strong><span class="chip-icon">✦</span><span id="chipCount">00</span></strong></div>
+        <div class="stat"><span class="stat-label">RACHA</span><strong id="streakLabel">0 <small>victorias</small></strong></div>
+      </div>
+      <button class="icon-button" id="rulesButton" aria-label="Ver reglas" title="Reglas">?</button>
+    </header>
+
+    <main class="game-layout">
+      <section class="table-area" aria-label="Mesa de juego">
+        <div class="table-heading">
+          <div>
+            <div class="eyebrow"><span class="live-dot"></span> MESA DE ALTO RIESGO <span class="heading-dash">/</span> <span id="roomType">LA APERTURA</span></div>
+            <h1 id="roomTitle">La primera apuesta</h1>
+            <p id="roomSubtitle">Limpia el tablero. Cada movimiento despierta a una pieza rival.</p>
+          </div>
+          <div class="round-pill"><span class="round-sigil">♜</span><span><small>RONDA</small><b id="roundNumber">01</b></span></div>
+        </div>
+
+        <div class="board-frame">
+          <div class="board-topline"><span>♛ <span id="enemyCount">4</span> PIEZAS ENEMIGAS</span><span class="turn-indicator" id="turnIndicator"><i></i> TU TURNO</span></div>
+          <div class="board-wrap">
+            <div class="rank-labels" aria-hidden="true"><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
+            <div id="board" class="board" role="grid" aria-label="Tablero de ajedrez seis por seis"></div>
+            <div class="file-labels" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span></div>
+          </div>
+          <div class="board-footer"><span><span class="legend-dot move-dot"></span> Movimiento posible</span><span><span class="legend-dot capture-dot"></span> Captura</span><span class="board-hint" id="boardHint">Elige una pieza para ver sus jugadas</span></div>
+        </div>
+        <div class="table-bottomline"><span>♣</span> LA CASA SIEMPRE JUEGA... ¿Y TÚ? <span>♣</span><span class="table-id">MESA N.º 06 — LAS VEGAS</span></div>
+      </section>
+
+      <aside class="side-panel">
+        <section class="panel-card objective-card">
+          <div class="card-label"><span>OBJETIVO DE SALA</span><span class="mini-diamond">◆</span></div>
+          <div class="objective-main"><span class="target-icon">♚</span><div><h2>Barre la mesa</h2><p>Captura todas las piezas<br>del crupier para avanzar.</p></div></div>
+          <div class="progress-row"><div class="progress-track"><span id="progressFill"></span></div><b id="progressText">0 / 4</b></div>
+        </section>
+
+        <section class="panel-card arsenal-card">
+          <div class="section-title"><div><span class="card-label">TU MANO</span><h2>El escuadrón</h2></div><span class="piece-count" id="allyCount">6 <small>piezas</small></span></div>
+          <div id="squadList" class="squad-list"></div>
+        </section>
+
+        <section class="panel-card log-card">
+          <div class="section-title"><div><span class="card-label">CRÓNICA DE LA MESA</span><h2>Últimas jugadas</h2></div><span class="log-mark">◉</span></div>
+          <div id="battleLog" class="battle-log" aria-live="polite"></div>
+        </section>
+
+        <div class="side-note"><span>✦</span><p>La suerte es aleatoria.<br><b>La estrategia, no.</b></p></div>
+      </aside>
+    </main>
+
+    <footer class="footer"><span>JAQUE ROYALE <span>©</span> 2026</span><span>HECHO PARA QUIENES SABEN CUÁNDO IR ALL-IN</span><button id="restartButton" class="text-button">↻ Reiniciar partida</button></footer>
+  </div>
+
+  <div id="overlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="overlayTitle">
+    <div class="modal-card"><div class="modal-top"><span class="modal-icon" id="modalIcon">♛</span><span class="modal-kicker" id="modalKicker">LA MESA TE ESPERA</span></div><h2 id="overlayTitle">Reglas de la casa</h2><div id="modalBody" class="modal-body"></div><div id="modalActions" class="modal-actions"></div><button id="closeModal" class="modal-close" aria-label="Cerrar">×</button></div>
+  </div>
+</body>
+</html>
