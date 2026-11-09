@@ -63,3 +63,26 @@ body{background:radial-gradient(ellipse at 18% 12%,#273469 0,transparent 36%),ra
 @keyframes confetti-fall{0%{opacity:0;transform:translateY(-20px) rotate(0)}12%{opacity:1}100%{opacity:0;transform:translateY(110vh) rotate(var(--spin))}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 
+/* Chessmen with a little tabletop depth, plus a restrained pixel-board texture. */
+.cell{perspective:420px;transform-style:preserve-3d}
+.cell.light{background-color:#ffe5a4;background-image:linear-gradient(45deg,#ffffff18 25%,transparent 25%,transparent 75%,#9f6b3215 75%),linear-gradient(45deg,#9f6b3210 25%,transparent 25%,transparent 75%,#ffffff18 75%);background-size:8px 8px;background-position:0 0,4px 4px}
+.cell.dark{background-color:#6b76c8;background-image:linear-gradient(45deg,#ffffff18 25%,transparent 25%,transparent 75%,#241c6e20 75%),linear-gradient(45deg,#241c6e18 25%,transparent 25%,transparent 75%,#ffffff12 75%);background-size:8px 8px;background-position:0 0,4px 4px}
+.piece{isolation:isolate;transform-style:preserve-3d;perspective:420px;transform:rotateX(8deg) translateZ(8px);text-shadow:0 1px 0 #fff8,0 3px 0 #d9a64c,0 5px 0 #946344,0 7px 0 #563c68,0 10px 5px #1119;filter:drop-shadow(0 5px 2px #15102b88)}
+.piece::before{content:'';position:absolute;z-index:-1;left:13%;bottom:3%;width:74%;height:23%;border:2px solid #fff9;border-radius:50%;transform:translateZ(-12px) rotateX(58deg);background:linear-gradient(145deg,#fff1ad 0%,#eeb75f 45%,#a55a9b 100%);box-shadow:0 3px 0 #a85e70,0 6px 0 #633c79,0 9px 5px #17132d99, inset 0 2px 3px #fff9;transition:filter .18s,transform .18s}
+.piece::after{content:'';position:absolute;z-index:-1;right:13%;top:12%;width:6px;height:6px;background:#fff2a1;box-shadow:4px 0 #ffef9a,0 4px #ffef9a,4px 4px #ffef9a;opacity:.8;transform:translateZ(14px);image-rendering:pixelated}
+.piece.enemy{ text-shadow:0 1px 0 #ffc1cf,0 3px 0 #df6e83,0 5px 0 #9c3e83,0 7px 0 #522a70,0 10px 5px #1119 }
+.piece.enemy::before{background:linear-gradient(145deg,#ffc0d0 0%,#f46b91 45%,#7d4ccc 100%);box-shadow:0 3px 0 #a43d87,0 6px 0 #592e80,0 9px 5px #17132d99,inset 0 2px 3px #fff9}
+.piece.king.player::before{background:linear-gradient(145deg,#fff9bd,#ffcf42 45%,#ff7b5c 100%);box-shadow:0 3px 0 #e58b48,0 6px 0 #9a467b,0 9px 5px #17132d99,inset 0 2px 3px #fff9}
+.piece.king.enemy::before{background:linear-gradient(145deg,#ffd0df,#ff5e91 45%,#883fd0 100%)}
+.piece.player{text-shadow:0 1px 0 #fff8,0 3px 0 #d9a64c,0 5px 0 #946344,0 7px 0 #563c68,0 10px 5px #1119}
+.piece.enemy{text-shadow:0 1px 0 #ffc1cf,0 3px 0 #df6e83,0 5px 0 #9c3e83,0 7px 0 #522a70,0 10px 5px #1119}
+.piece.king.player{text-shadow:0 1px 0 #fff9bd,0 3px 0 #ffcf42,0 5px 0 #e58b48,0 7px 0 #9a467b,0 10px 5px #1119}
+.piece.king.enemy{text-shadow:0 1px 0 #ffd0df,0 3px 0 #ff5e91,0 5px 0 #b33d9a,0 7px 0 #522a70,0 10px 5px #1119}
+.cell:hover .piece{transform:rotateX(2deg) translateY(-4px) translateZ(14px) scale(1.08)}
+.cell.selected .piece{animation:piece-hover 1s ease-in-out infinite alternate}
+.board{image-rendering:pixelated}
+.board-frame,.panel-card,.round-pill,.modal-card,.reward-card{border-radius:4px}
+@keyframes piece-hover{to{transform:rotateX(2deg) translateY(-5px) translateZ(17px) scale(1.06);filter:drop-shadow(0 8px 3px #15102b99)}}
+@media(prefers-reduced-motion:reduce){.cell.selected .piece{animation:none}}
+
+
