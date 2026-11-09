@@ -18,6 +18,35 @@ let room = 0, board = [], selected = null, legalMoves = [], turnBusy = false;
 let chips = 0, captures = 0, roomCaptures = 0, roomEnemyStart = 0, streak = 0;
 let mods = new Set(), freeUsed = false, logLines = [];
 let lastMove = null, gameFinished = false;
+function burstAt(r,c,color,count=12) {
+  const cell=boardEl.children[r*6+c];if(!cell)return;
+  for(let i=0;i<count;i++){
+    const particle=document.createElement('i');particle.className='fx-particle';
+    const angle=Math.random()*Math.PI*2,distance=18+Math.random()*48;
+    particle.style.setProperty('--dx',`${Math.cos(angle)*distance}px`);
+    particle.style.setProperty('--dy',`${Math.sin(angle)*distance}px`);
+    particle.style.setProperty('--spark',color);particle.style.setProperty('--delay',`${Math.random()*100}ms`);
+    cell.appendChild(particle);window.setTimeout(()=>particle.remove(),800);
+  }
+}
+function boardPulse(kind) {
+  const frame=document.querySelector('.board-frame');frame.classList.remove('fx-capture','fx-hit','fx-win');
+  void frame.offsetWidth;frame.classList.add(kind);window.setTimeout(()=>frame.classList.remove(kind),650);
+}
+function floatReward(text, color='#ffe27a') {
+  const stat=document.querySelector('.stat-chips');if(!stat)return;
+  const label=document.createElement('span');label.className='reward-float';label.textContent=text;label.style.setProperty('--reward-color',color);
+  stat.appendChild(label);window.setTimeout(()=>label.remove(),1100);
+}
+function confettiBurst() {
+  const colors=['#ff5577','#ffd84d','#54e2c2','#a77bff','#ff8e4a'];
+  for(let i=0;i<42;i++){
+    const bit=document.createElement('i');bit.className='confetti-bit';bit.style.setProperty('--confetti',colors[i%colors.length]);
+    bit.style.setProperty('--x',`${Math.random()*100}vw`);bit.style.setProperty('--spin',`${Math.random()*720-360}deg`);
+    bit.style.setProperty('--fall',`${900+Math.random()*900}ms`);bit.style.setProperty('--delay',`${Math.random()*350}ms`);
+    document.body.appendChild(bit);window.setTimeout(()=>bit.remove(),2300);
+  }
+}
 const makePiece = (side,type,r,c) => ({ side,type,r,c,id:`${side}-${type}-${Math.random().toString(36).slice(2,8)}` });
 function startRoom(index) {
   room = index; board = []; selected = null; legalMoves = []; turnBusy = false; lastMove = null; freeUsed = false; roomCaptures = 0; gameFinished = false;
@@ -85,6 +114,8 @@ function performPlayerMove(from,to) {
   const notation=`${names[piece.type]} ${String.fromCharCode(97+from.c)}${6-from.r} → ${String.fromCharCode(97+to.c)}${6-to.r}`;
   addLog(capturedName?`${notation}. <em>Captura ${capturedName}</em> · +${1+(mods.has('bounty')?1:0)} ficha${mods.has('bounty')?'s':''}.`:notation);
   selected=null;legalMoves=[];turnBusy=true;document.getElementById('boardHint').textContent='El crupier piensa...';render();
+  if(target){burstAt(to.r,to.c,'#ffbf4d',22);boardPulse('fx-capture');floatReward(`+${1+(mods.has('bounty')?1:0)} ✦`,'#ffe27a');}
+  else burstAt(to.r,to.c,'#54e2c2',10);
   if(!board.some(p=>p.side==='enemy')){turnBusy=false;winRoom();return;}
   const skip=mods.has('free')&&!freeUsed;
   if(skip){freeUsed=true;addLog('Jugada gratis: el crupier pierde su respuesta.');turnBusy=false;document.getElementById('boardHint').textContent='Elige tu siguiente pieza';render();return;}
@@ -107,9 +138,10 @@ function enemyTurn() {
   const target=at(move.r,move.c);
   if(target){
     board=board.filter(p=>p!==target);addLog(`El crupier captura tu ${names[target.type].toLowerCase()} en ${String.fromCharCode(97+move.c)}${6-move.r}.`);
-    if(target.type==='king'){piece.r=move.r;piece.c=move.c;turnBusy=false;render();loseRun();return;}
+    if(target.type==='king'){piece.r=move.r;piece.c=move.c;turnBusy=false;render();burstAt(move.r,move.c,'#ff5577',24);boardPulse('fx-hit');loseRun();return;}
   } else addLog(`El crupier mueve ${names[piece.type].toLowerCase()} a ${String.fromCharCode(97+move.c)}${6-move.r}.`);
   const from={r:piece.r,c:piece.c};piece.r=move.r;piece.c=move.c;lastMove=[from,{r:move.r,c:move.c}];turnBusy=false;selected=null;legalMoves=[];document.getElementById('boardHint').textContent='Elige una pieza para ver sus jugadas';render();
+  burstAt(move.r,move.c,target?'#ff5577':'#6daeff',target?18:8);if(target)boardPulse('fx-hit');
 }
 function updateHUD() {
   const enemies=board.filter(p=>p.side==='enemy'), allies=board.filter(p=>p.side==='player');
@@ -135,7 +167,7 @@ function updateHUD() {
 }
 function addLog(text) {logLines.push({n:String(logLines.length+1).padStart(2,'0'),text});if(logLines.length>12)logLines.shift();}
 function winRoom() {
-  gameFinished=true;turnBusy=true;streak++;chips+=2+(mods.has('purse')?3:0);render();
+  gameFinished=true;turnBusy=true;streak++;chips+=2+(mods.has('purse')?3:0);render();boardPulse('fx-win');confettiBurst();floatReward(`SALA LIMPIA · +${2+(mods.has('purse')?3:0)} ✦`,'#71f0c1');
   if(room===2){
     showModal('♛','LA CASA HA CAÍDO','¡Jaque mate al casino!',`<p>Has conquistado las tres mesas y te llevas <strong>${chips} fichas</strong>.</p><p>Capturaste <strong>${captures} piezas</strong> y sobreviviste a la mano final. El rey eres tú.</p>`,[{label:'Volver a jugar',run:()=>resetGame()}]);
   } else {
